@@ -16,6 +16,8 @@ include $(THEOS)/makefiles/common.mk
 
 XCODEPROJ_NAME = Alderis
 
+FINALPACKAGE = 1
+
 Alderis_XCODEFLAGS = DYLIB_INSTALL_NAME_BASE=/Library/Frameworks BUILD_LIBRARY_FOR_DISTRIBUTION=YES ARCHS="$(ARCHS)"
 
 SUBPROJECTS = lcpshim
