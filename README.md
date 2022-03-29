@@ -8,20 +8,6 @@ The user can start by selecting a color they like on the initial color palette t
 
 Alderis is named for the Alderamin (Alpha) star in the Cepheus (Cephei) constellation. (There is no dependency on the [Cephei](https://hbang.github.io/libcephei/) project.)
 
-**[Documentation](https://hbang.github.io/Alderis/)**
-
-<table align="center">
-<tr>
-<td>
-<a href="https://hbang.github.io/Alderis/screenshots/alderis-demo.mp4">
-<img src="screenshots/alderis-demo.gif" width="320">
-<br>
-<sup>Click for full-quality MP4</sup>
-</a>
-</td>
-</tr>
-</table>
-
 ## Why do I want this? Isn’t there already a color picker in iOS?
 Alderis was [originally released](https://twitter.com/hbkirb/status/1239332547437326337) before iOS 14 was unveiled with a built-in [color picker](https://developer.apple.com/design/human-interface-guidelines/ios/controls/color-wells/) feature, which seems to be heavily inspired by Alderis. However, rather than throw in the towel here, I’m considering this an opportunity to continue building what I feel is a better, less cluttered user experience, with more configuration options for apps to fine-tune a color picker UI suitable for each use case and target market.
 
