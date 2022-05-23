@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name         = "Alderis"
-  spec.version      = "1.1.2"
+  spec.version      = "1.2.0"
   spec.summary      = "A fresh new color picker, with a gentle, fun, and dead simple user interface."
   spec.description  = <<-DESC
                       Alderis is a fresh new color picker, with a gentle, fun, and dead simple user
@@ -12,10 +12,10 @@ Pod::Spec.new do |spec|
                       sliders found on the two other tabs.
                       DESC
   spec.homepage     = "https://github.com/hbang/Alderis"
-  spec.screenshots  = "https://github.com/hbang/Alderis/raw/master/screenshots/alderis-1.jpg",
-                      "https://github.com/hbang/Alderis/raw/master/screenshots/alderis-2.jpg",
-                      "https://github.com/hbang/Alderis/raw/master/screenshots/alderis-3.jpg",
-                      "https://github.com/hbang/Alderis/raw/master/screenshots/alderis-4.jpg"
+  spec.screenshots  = "https://github.com/hbang/Alderis/raw/main/screenshots/alderis-1.jpg",
+                      "https://github.com/hbang/Alderis/raw/main/screenshots/alderis-2.jpg",
+                      "https://github.com/hbang/Alderis/raw/main/screenshots/alderis-3.jpg",
+                      "https://github.com/hbang/Alderis/raw/main/screenshots/alderis-4.jpg"
   spec.license      = "Apache License, Version 2.0"
   spec.author       = "HASHBANG Productions"
   spec.social_media_url = "https://twitter.com/hashbang"
@@ -26,5 +26,5 @@ Pod::Spec.new do |spec|
   spec.source       = { :git => "https://github.com/hbang/Alderis.git", :tag => "#{spec.version}" }
   spec.requires_arc = true
   spec.source_files = [ "Alderis/*.swift", "Alderis/*.h" ]
-  spec.resource_bundles = { "Alderis" => "Alderis/Assets.xcassets" }
+  spec.resource_bundles = { "Alderis" => "Alderis/Assets-ios12.xcassets" }
 end

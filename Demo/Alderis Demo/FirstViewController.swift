@@ -11,6 +11,8 @@ import Alderis
 
 class FirstViewController: UIViewController {
 
+	private var color = UIColor(hue: 0.939614, saturation: 0.811765, brightness: 0.333333, alpha: 1)
+
 	private var colorWell: ColorWell!
 	private var uikitWell: UIView?
 
@@ -32,33 +34,46 @@ class FirstViewController: UIViewController {
 		let stackView = UIStackView()
 		stackView.translatesAutoresizingMaskIntoConstraints = false
 		stackView.axis = .vertical
+		stackView.alignment = .center
 		stackView.spacing = 10
 		view.addSubview(stackView)
 
 		let mainButton = UIButton(type: .system)
-		mainButton.titleLabel!.font = UIFont.systemFont(ofSize: 34, weight: .semibold)
+		if #available(iOS 15, *) {
+			var config = UIButton.Configuration.filled()
+			config.buttonSize = .large
+			mainButton.configuration = config
+		} else {
+			mainButton.titleLabel!.font = UIFont.systemFont(ofSize: 34, weight: .semibold)
+		}
 		mainButton.setTitle("Present", for: .normal)
 		mainButton.addTarget(self, action: #selector(self.presentColorPicker), for: .touchUpInside)
 		stackView.addArrangedSubview(mainButton)
 
 		// swiftlint:disable comma
-		let buttons: [(String, Selector)] = [
-			("Present with customised title",       #selector(self.presentColorPickerCustomisedTitle)),
-			("Present with customised initial tab", #selector(self.presentColorPickerCustomisedInitialTab)),
-			("Present with customised tabs",        #selector(self.presentColorPickerCustomisedTabs)),
-			("Present with tabs hidden",            #selector(self.presentColorPickerNoTabs)),
-			("Present with customised title, tabs hidden", #selector(self.presentColorPickerCustomisedTitleNoTabs)),
-			("Present without alpha",               #selector(self.presentColorPickerNoAlpha)),
-			("Present without overriding Smart Invert", #selector(self.presentColorPickerNoOverrideSmartInvert)),
-			("Present using deprecated API",        #selector(self.presentColorPickerDeprecatedAPI)),
-			("Present UIKit Color Picker",          #selector(self.presentUIKitColorPicker))
+		let buttons: [(title: String, action: Selector)] = [
+			("Present with customised title",       #selector(presentColorPickerCustomisedTitle)),
+			("Present with customised initial tab", #selector(presentColorPickerCustomisedInitialTab)),
+			("Present with customised tabs",        #selector(presentColorPickerCustomisedTabs)),
+			("Present with tabs hidden",            #selector(presentColorPickerNoTabs)),
+			("Present with customised title, tabs hidden", #selector(presentColorPickerCustomisedTitleNoTabs)),
+			("Present without alpha",               #selector(presentColorPickerNoAlpha)),
+			("Present without overriding Smart Invert", #selector(presentColorPickerNoOverrideSmartInvert)),
+			("Present using deprecated API",        #selector(presentColorPickerDeprecatedAPI)),
+			("Present UIKit Color Picker",          #selector(presentUIKitColorPicker))
 		]
 		// swiftlint:enable comma
 
 		for item in buttons {
 			let button = UIButton(type: .system)
-			button.setTitle(item.0, for: .normal)
-			button.addTarget(self, action: item.1, for: .touchUpInside)
+			if #available(iOS 15, *) {
+				var config = UIButton.Configuration.plain()
+				config.buttonSize = .mini
+				config.macIdiomStyle = .borderlessTinted
+				button.configuration = config
+			}
+			button.setTitle(item.title, for: .normal)
+			button.addTarget(self, action: item.action, for: .touchUpInside)
 			stackView.addArrangedSubview(button)
 		}
 
@@ -97,17 +112,15 @@ class FirstViewController: UIViewController {
 		nonDragOrDropWell.isDropInteractionEnabled = false
 		nonDragOrDropWell.color = .systemGreen
 
-		let wellsContainerView = UIView()
-
-		let wellsStackView = UIStackView(arrangedSubviews: [ colorWell,
-																												 dragOrDropColorWell,
-																												 nonDraggableWell,
-																												 nonDroppableWell,
-																												 nonDragOrDropWell ])
+		let wellsStackView = UIStackView(arrangedSubviews: [colorWell,
+																												dragOrDropColorWell,
+																												nonDraggableWell,
+																												nonDroppableWell,
+																												nonDragOrDropWell])
 		wellsStackView.translatesAutoresizingMaskIntoConstraints = false
 		wellsStackView.axis = .horizontal
+		wellsStackView.alignment = .center
 		wellsStackView.spacing = 10
-		wellsContainerView.addSubview(wellsStackView)
 
 		if #available(iOS 14, *) {
 			let uikitWell = UIColorWell()
@@ -116,42 +129,46 @@ class FirstViewController: UIViewController {
 			self.uikitWell = uikitWell
 		}
 
-		stackView.addArrangedSubview(wellsContainerView)
+		stackView.addArrangedSubview(wellsStackView)
 
 		NSLayoutConstraint.activate([
 			stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
 			stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
 			stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
 
-			spacerView.heightAnchor.constraint(equalToConstant: 0),
-
-			wellsStackView.topAnchor.constraint(equalTo: wellsContainerView.topAnchor),
-			wellsStackView.bottomAnchor.constraint(equalTo: wellsContainerView.bottomAnchor),
-			wellsStackView.centerXAnchor.constraint(equalTo: wellsContainerView.centerXAnchor)
+			spacerView.heightAnchor.constraint(equalToConstant: 0)
 		])
 
-		for view in wellsStackView.arrangedSubviews {
-			NSLayoutConstraint.activate([
-				view.widthAnchor.constraint(equalToConstant: 32),
-				view.heightAnchor.constraint(equalTo: view.widthAnchor)
-			])
+		var isMac = false
+		if #available(iOS 14, *) {
+			isMac = UIDevice.current.userInterfaceIdiom == .mac
 		}
+
+		NSLayoutConstraint.activate(wellsStackView.arrangedSubviews.flatMap { view in
+			[
+				view.widthAnchor.constraint(equalToConstant: isMac ? 24 : 32),
+				view.heightAnchor.constraint(equalTo: view.widthAnchor)
+			]
+		})
 	}
 
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 
-		colorWell.color = view.window!.tintColor
-		if #available(iOS 14, *), let uikitWell = uikitWell as? UIColorWell {
-			uikitWell.selectedColor = view.window!.tintColor
+		view.window!.tintColor = color
+		colorWell.color = color
+		if #available(iOS 14, *),
+			 let uikitWell = uikitWell as? UIColorWell {
+			uikitWell.selectedColor = color
 		}
 	}
 
 	@objc func colorWellValueChanged(_ sender: ColorWell) {
 		NSLog("Color well value changed with value %@", String(describing: sender.color))
 		view.window!.tintColor = sender.color
-		if #available(iOS 14, *), let uikitWell = uikitWell as? UIColorWell {
-			uikitWell.tintColor = sender.color
+		if #available(iOS 14, *),
+			 let uikitWell = uikitWell as? UIColorWell {
+			uikitWell.selectedColor = sender.color
 		}
 	}
 
@@ -163,7 +180,7 @@ class FirstViewController: UIViewController {
 	}
 
 	@objc func presentColorPicker(_ sender: UIView) {
-		let configuration = ColorPickerConfiguration(color: view.window!.tintColor)
+		let configuration = ColorPickerConfiguration(color: color)
 		let colorPickerViewController = ColorPickerViewController(configuration: configuration)
 		colorPickerViewController.delegate = self
 		colorPickerViewController.popoverPresentationController?.sourceView = sender
@@ -171,7 +188,7 @@ class FirstViewController: UIViewController {
 	}
 
 	@objc func presentColorPickerCustomisedTitle(_ sender: UIView) {
-		let configuration = ColorPickerConfiguration(color: view.window!.tintColor)
+		let configuration = ColorPickerConfiguration(color: color)
 		configuration.title = "Select an Awesome Color"
 
 		let colorPickerViewController = ColorPickerViewController(configuration: configuration)
@@ -181,7 +198,7 @@ class FirstViewController: UIViewController {
 	}
 
 	@objc func presentColorPickerCustomisedInitialTab(_ sender: UIView) {
-		let configuration = ColorPickerConfiguration(color: view.window!.tintColor)
+		let configuration = ColorPickerConfiguration(color: color)
 		configuration.initialTab = .map
 
 		let colorPickerViewController = ColorPickerViewController(configuration: configuration)
@@ -191,8 +208,8 @@ class FirstViewController: UIViewController {
 	}
 
 	@objc func presentColorPickerCustomisedTabs(_ sender: UIView) {
-		let configuration = ColorPickerConfiguration(color: view.window!.tintColor)
-		configuration.visibleTabs = [ .map, .sliders ]
+		let configuration = ColorPickerConfiguration(color: color)
+		configuration.visibleTabs = [.map, .sliders]
 		configuration.initialTab = .sliders
 
 		let colorPickerViewController = ColorPickerViewController(configuration: configuration)
@@ -202,7 +219,7 @@ class FirstViewController: UIViewController {
 	}
 
 	@objc func presentColorPickerNoAlpha(_ sender: UIView) {
-		let configuration = ColorPickerConfiguration(color: view.window!.tintColor.withAlphaComponent(0.5))
+		let configuration = ColorPickerConfiguration(color: color.withAlphaComponent(0.5))
 		configuration.supportsAlpha = false
 
 		let colorPickerViewController = ColorPickerViewController(configuration: configuration)
@@ -212,7 +229,7 @@ class FirstViewController: UIViewController {
 	}
 
 	@objc func presentColorPickerNoTabs(_ sender: UIView) {
-		let configuration = ColorPickerConfiguration(color: view.window!.tintColor)
+		let configuration = ColorPickerConfiguration(color: color)
 		configuration.showTabs = false
 
 		let colorPickerViewController = ColorPickerViewController(configuration: configuration)
@@ -222,7 +239,7 @@ class FirstViewController: UIViewController {
 	}
 
 	@objc func presentColorPickerCustomisedTitleNoTabs(_ sender: UIView) {
-		let configuration = ColorPickerConfiguration(color: view.window!.tintColor)
+		let configuration = ColorPickerConfiguration(color: color)
 		configuration.title = "Select an Awesome Color"
 		configuration.showTabs = false
 
@@ -233,7 +250,7 @@ class FirstViewController: UIViewController {
 	}
 
 	@objc func presentColorPickerNoOverrideSmartInvert(_ sender: UIView) {
-		let configuration = ColorPickerConfiguration(color: view.window!.tintColor)
+		let configuration = ColorPickerConfiguration(color: color)
 		configuration.overrideSmartInvert = false
 
 		let colorPickerViewController = ColorPickerViewController(configuration: configuration)
@@ -245,7 +262,7 @@ class FirstViewController: UIViewController {
 	@objc func presentColorPickerDeprecatedAPI(_ sender: UIView) {
 		let colorPickerViewController = ColorPickerViewController()
 		colorPickerViewController.delegate = self
-		colorPickerViewController.color = view.window!.tintColor
+		colorPickerViewController.color = color
 		colorPickerViewController.popoverPresentationController?.sourceView = sender
 		tabBarController!.present(colorPickerViewController, animated: true)
 	}
@@ -254,7 +271,7 @@ class FirstViewController: UIViewController {
 		if #available(iOS 14, *) {
 			let colorPickerViewController = UIColorPickerViewController()
 			colorPickerViewController.delegate = self
-			colorPickerViewController.selectedColor = view.window!.tintColor
+			colorPickerViewController.selectedColor = color
 			colorPickerViewController.popoverPresentationController?.sourceView = sender
 			tabBarController!.present(colorPickerViewController, animated: true)
 		} else {
@@ -267,13 +284,14 @@ class FirstViewController: UIViewController {
 extension FirstViewController: ColorPickerDelegate {
 
 	func colorPicker(_ colorPicker: ColorPickerViewController, didSelect color: UIColor) {
-		NSLog("User selected color %@", String(describing: color))
+		NSLog("User selected color %@ (%@)", color.propertyListValue, String(describing: color))
+		self.color = color
 		view.window!.tintColor = color
 		colorWell.color = color
 	}
 
 	func colorPicker(_ colorPicker: ColorPickerViewController, didAccept color: UIColor) {
-		NSLog("User accepted color %@", String(describing: color))
+		NSLog("User accepted color %@ (%@)", color.propertyListValue, String(describing: color))
 	}
 
 	func colorPickerDidCancel(_ colorPicker: ColorPickerViewController) {
@@ -286,7 +304,10 @@ extension FirstViewController: ColorPickerDelegate {
 extension FirstViewController: UIColorPickerViewControllerDelegate {
 
 	func colorPickerViewControllerDidSelectColor(_ viewController: UIColorPickerViewController) {
-		NSLog("UIKit color picker value changed with color %@", String(describing: viewController.selectedColor))
+		NSLog("UIKit color picker value changed with color %@ (%@)",
+					viewController.selectedColor.propertyListValue,
+					String(describing: viewController.selectedColor))
+		color = viewController.selectedColor
 		view.window!.tintColor = viewController.selectedColor
 		if let uikitWell = uikitWell as? UIColorWell {
 			uikitWell.selectedColor = viewController.selectedColor
